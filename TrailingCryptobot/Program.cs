@@ -84,7 +84,7 @@ namespace TrailingCryptobot
             var options = new List<ClientOptions>();
             var contents = File.ReadAllLines("keys.csv");
             var headerRow = contents.FirstOrDefault();
-            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin")
+            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent")
             {
                 foreach (var friend in contents.Where(x => x != headerRow))
                 {
@@ -92,13 +92,14 @@ namespace TrailingCryptobot
 
                     if (friendKeys.Count() == 7)
                     {
-                        var name = friendKeys.ElementAt(0);
+                        var name = friendKeys.ElementAt(0); // ex: John Smith
                         var email = friendKeys.ElementAt(1);
                         var passphrase = friendKeys.ElementAt(2);
                         var secret = friendKeys.ElementAt(3);
                         var key = friendKeys.ElementAt(4);
-                        var sandbox = friendKeys.ElementAt(5);
-                        var coin = friendKeys.ElementAt(6);
+                        var sandbox = friendKeys.ElementAt(5); // ex: true
+                        var coin = friendKeys.ElementAt(6); // ex: BTC-USD
+                        var trailPercent = friendKeys.ElementAt(7); // ex: 0.01 for 1 percent
 
                         var option = new ClientOptions
                         {
@@ -108,7 +109,8 @@ namespace TrailingCryptobot
                             Secret = secret,
                             Key = key,
                             Sandbox = bool.Parse(sandbox),
-                            Coin = coin
+                            Coin = coin,
+                            TrailPercent = decimal.Parse(trailPercent)
                         };
 
                         options.Add(option);
