@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TrailingCryptobot.Handlers;
 using TrailingCryptobot.Models;
 
 namespace TrailingCryptobot
@@ -20,9 +21,7 @@ namespace TrailingCryptobot
                                rollOnFileSizeLimit: true,
                                retainedFileCountLimit: 3)
                            .CreateLogger();
-
-            Log.Information("This cryptobot simply trails the price down to buy and up to sell for your specified cryptocurrency while using your Coinbase Pro API.");
-
+            
             var clientOptions = InitializePrivateClientOptions();
 
             foreach (var option in clientOptions)
@@ -65,6 +64,10 @@ namespace TrailingCryptobot
                             
                             handler.HandleTrailStop().Wait();
                         }
+
+                        var reportHandler = new ReportHandler(client, coinAccount);
+                        reportHandler.HandleReporting().Wait();
+
                         Log.Information($"Done managing {client.Name}'s account.");
                     }
                 }

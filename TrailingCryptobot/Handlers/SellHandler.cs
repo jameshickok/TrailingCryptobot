@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TrailingCryptobot.Models;
 
-namespace TrailingCryptobot
+namespace TrailingCryptobot.Handlers
 {
     public class SellHandler
     {
