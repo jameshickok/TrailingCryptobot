@@ -60,9 +60,16 @@ namespace TrailingCryptobot
                         else
                         {
                             // Trail stop buy.
-                            var handler = new BuyHandler(client, coinInfo, usdAccount);
-                            
-                            handler.HandleTrailStop().Wait();
+                            if(usdAccount.Available >= coinInfo.MinMarketFunds)
+                            {
+                                var handler = new BuyHandler(client, coinInfo, usdAccount);
+
+                                handler.HandleTrailStop().Wait();
+                            }
+                            else
+                            {
+                                Log.Information("No available funds for purchase.");
+                            }
                         }
 
                         var reportHandler = new ReportHandler(client, coinAccount);

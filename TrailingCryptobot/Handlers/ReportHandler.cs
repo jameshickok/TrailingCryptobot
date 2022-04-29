@@ -26,7 +26,7 @@ namespace TrailingCryptobot.Handlers
             var lastExecutionTime = GetLastExecutionTime();
             var now = DateTime.UtcNow;
 
-            if(lastExecutionTime < now.AddDays(-1))
+            if(lastExecutionTime <= now.AddDays(-1))
             {
                 Log.Information($"Sending reports for {_client.Name} on {_client.Coin} account.");
                 var acctRpt = await _client.ReportsService.CreateNewAccountReportAsync(lastExecutionTime, now, _account.Id.ToString(), email: _client.Email, fileFormat: FileFormat.Pdf);
