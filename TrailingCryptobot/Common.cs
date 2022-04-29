@@ -65,14 +65,18 @@ namespace TrailingCryptobot
                 // records.csv = "name,coin,price,fee"
                 var filename = "records.csv";
                 var contents = File.ReadAllLines(filename);
-                var oldRecord = contents.FirstOrDefault(x => x.Contains(client.Name) && x.Contains(client.Coin));
-                if(oldRecord != null)
-                {
-                    contents = contents.Where(x => x != oldRecord).ToArray();
-                    File.Delete(filename);
-                    File.AppendAllLines(filename, contents);
-                }
 
+                if(contents != null)
+                {
+                    var oldRecord = contents.FirstOrDefault(x => x.Contains(client.Name) && x.Contains(client.Coin));
+                    if (oldRecord != null)
+                    {
+                        contents = contents.Where(x => x != oldRecord).ToArray();
+                        File.Delete(filename);
+                        File.AppendAllLines(filename, contents);
+                    }
+                }
+                
                 var newRecord = $"{client.Name},{client.Coin},{limitPrice},{feeRates.MakerFeeRate}";
                 File.AppendAllLines(filename, new string[] { newRecord });
             }

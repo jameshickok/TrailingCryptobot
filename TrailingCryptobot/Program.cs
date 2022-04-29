@@ -93,7 +93,7 @@ namespace TrailingCryptobot
                 {
                     var friendKeys = friend.Split(',');
 
-                    if (friendKeys.Count() == 7)
+                    if (friendKeys.Count() == 8)
                     {
                         var name = friendKeys.ElementAt(0); // ex: John Smith
                         var email = friendKeys.ElementAt(1);

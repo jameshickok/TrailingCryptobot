@@ -39,7 +39,7 @@ namespace TrailingCryptobot.Handlers
             if(limitPrice > unitCost)
             {
                 var orders = await Common.GetOrders(_client);
-                var sellOrders = orders.Where(x => x.Side == OrderSide.Sell);
+                var sellOrders = orders.Where(x => x.Side == OrderSide.Sell).ToList();
 
                 foreach (var order in sellOrders)
                 {
@@ -100,12 +100,30 @@ namespace TrailingCryptobot.Handlers
         {
             // records.csv = "name,coin,price,fee"
             var contents = File.ReadAllLines("records.csv");
+
+            if(contents == null)
+            {
+                return 0;
+            }
+
             var record = contents.FirstOrDefault(x => x.Contains(_client.Name) && x.Contains(_client.Coin));
+
+            if(record == null)
+            {
+                return 0;
+            }
+
             var priceString = record.Split(',').ElementAt(2);
             var feeString = record.Split(',').ElementAt(3);
-            var price = decimal.Parse(priceString);
-            var fee = decimal.Parse(feeString);
-            return price + (price * fee);
+
+            if(decimal.TryParse(priceString, out var price) && decimal.TryParse(feeString, out var fee))
+            {
+                return price + (price * fee);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         private async Task PlaceOrder(OrderResponse order, decimal limitPrice, decimal stopPrice)

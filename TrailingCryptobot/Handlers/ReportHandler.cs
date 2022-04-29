@@ -41,15 +41,19 @@ namespace TrailingCryptobot.Handlers
         private void SetLastExecutionTime(DateTime dateTime)
         {
             var contents = File.ReadAllLines(FILENAME);
-            var reportRecord = contents.FirstOrDefault(x => x.Contains(_client.Name));
 
-            if(reportRecord != null)
+            if(contents != null)
             {
-                contents = contents.Where(x => x != reportRecord).ToArray();
-                File.Delete(FILENAME);
-                File.AppendAllLines(FILENAME, contents);
-            }
+                var reportRecord = contents.FirstOrDefault(x => x.Contains(_client.Name));
 
+                if (reportRecord != null)
+                {
+                    contents = contents.Where(x => x != reportRecord).ToArray();
+                    File.Delete(FILENAME);
+                    File.AppendAllLines(FILENAME, contents);
+                }
+            }
+            
             var newRecord = $"{_client.Name},{DateTime.UtcNow.ToString()}";
 
             File.AppendAllLines(FILENAME, new string[] { newRecord });
@@ -57,13 +61,26 @@ namespace TrailingCryptobot.Handlers
 
         private DateTime GetLastExecutionTime()
         {
+            var yesterday = DateTime.UtcNow.AddDays(-1);
             var contents = File.ReadAllLines(FILENAME);
+
+            if(contents == null)
+            {
+                return yesterday;
+            }
+
             var reportRecord = contents.FirstOrDefault(x => x.Contains(_client.Name));
-            var timeString = reportRecord.Split(',').ElementAtOrDefault(1);
+
+            if (reportRecord == null)
+            {
+                return yesterday;
+            }
+
+            var timeString = reportRecord.Split(',')?.ElementAtOrDefault(1);
 
             if(string.IsNullOrWhiteSpace(timeString))
             {
-                return DateTime.UtcNow.AddDays(-1);
+                return yesterday;
             }
 
             if(DateTime.TryParse(timeString, out var time))
@@ -72,7 +89,7 @@ namespace TrailingCryptobot.Handlers
             }
             else
             {
-                return DateTime.UtcNow.AddDays(-1);
+                return yesterday;
             }
         }
     }
