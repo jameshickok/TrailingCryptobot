@@ -76,7 +76,7 @@ namespace TrailingCryptobot.Handlers
                 return yesterday;
             }
 
-            var timeString = reportRecord.Split(',')?.ElementAtOrDefault(1);
+            var timeString = reportRecord.Split(',').ElementAtOrDefault(1);
 
             if(string.IsNullOrWhiteSpace(timeString))
             {
