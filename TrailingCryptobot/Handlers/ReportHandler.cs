@@ -29,10 +29,24 @@ namespace TrailingCryptobot.Handlers
             if(lastExecutionTime < now.AddDays(-1))
             {
                 Log.Information($"Sending reports for {_client.Name} on {_client.Coin} account.");
-                await _client.ReportsService.CreateNewAccountReportAsync(lastExecutionTime, now, _account.Id.ToString(), email: _client.Email, fileFormat: FileFormat.Pdf);
+                var acctRpt = await _client.ReportsService.CreateNewAccountReportAsync(lastExecutionTime, now, _account.Id.ToString(), email: _client.Email, fileFormat: FileFormat.Pdf);
                 Common.ThrottleSpeedPrivate();
-                await _client.ReportsService.CreateNewFillsReportAsync(lastExecutionTime, now, _client.Coin, email: _client.Email, fileFormat: FileFormat.Pdf);
+
+                while(acctRpt.Status != ReportStatus.Ready)
+                {
+                    acctRpt = await _client.ReportsService.GetReportStatus(acctRpt.Id.ToString());
+                    Common.ThrottleSpeedPrivate();
+                }
+
+                var fillsRpt = await _client.ReportsService.CreateNewFillsReportAsync(lastExecutionTime, now, _client.Coin, email: _client.Email, fileFormat: FileFormat.Pdf);
                 Common.ThrottleSpeedPrivate();
+
+                while (fillsRpt.Status != ReportStatus.Ready)
+                {
+                    fillsRpt = await _client.ReportsService.GetReportStatus(fillsRpt.Id.ToString());
+                    Common.ThrottleSpeedPrivate();
+                }
+
                 SetLastExecutionTime(now);
                 Log.Information("Reporting finished.");
             }
