@@ -4,11 +4,11 @@ This is a simple automated cryptocurrency trading bot that uses the Coinbase Pro
 Populate the data in the keys.csv file. The format for each row should be: Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent.
 
 # Examples
-Name: John Smith
-Email: someone@example.com
-Passphrase: <Generated from your API key>
-Secret: <Generated from your API key>
-Key: <Generated from your API key>
-Sandbox: true or false
-Coin: BTC-USD
+Name: John Smith<br />
+Email: someone@example.com<br />
+Passphrase: [Generated from your API key]<br />
+Secret: [Generated from your API key]<br />
+Key: [Generated from your API key]<br />
+Sandbox: true or false<br />
+Coin: BTC-USD<br />
 TrailPercent: 0.02
