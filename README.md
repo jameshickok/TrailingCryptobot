@@ -1,6 +1,8 @@
 # TrailingCryptobot
 This is a simple automated cryptocurrency trading bot that uses the Coinbase Pro API. It can be used with multiple accounts and is intended to be used with a task scheduler for regular execution.
 
+How to create a Coinbase Pro API key: https://help.coinbase.com/en/pro/other-topics/api/how-do-i-create-an-api-key-for-coinbase-pro
+
 Populate the data in the keys.csv file. The format for each row should be: Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent.
 
 # Examples
