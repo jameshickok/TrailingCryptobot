@@ -85,7 +85,7 @@ namespace TrailingCryptobot.Handlers
 
         public async Task HandleStopLoss()
         {
-            var unitCost = GetCost();
+            var unitCost = await GetCost(0);
             var stopLossPrice = unitCost - (unitCost * _client.TrailPercent * 3);
             var stopLossLimit = stopLossPrice - (unitCost * _client.TrailPercent * 3);
             stopLossPrice = Common.GetTruncatedValue(stopLossPrice, _product.QuoteIncrement);
