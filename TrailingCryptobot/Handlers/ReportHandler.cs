@@ -62,7 +62,7 @@ namespace TrailingCryptobot.Handlers
 
                 if (reportRecord != null)
                 {
-                    contents = contents.Where(x => x != reportRecord).ToArray();
+                    contents = contents.Where(x => x != reportRecord && x != Environment.NewLine && !string.IsNullOrWhiteSpace(x)).ToArray();
                     File.Delete(FILENAME);
                     File.AppendAllLines(FILENAME, contents);
                 }

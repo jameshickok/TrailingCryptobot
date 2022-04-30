@@ -71,7 +71,7 @@ namespace TrailingCryptobot
                     var oldRecord = contents.FirstOrDefault(x => x.Contains(client.Name) && x.Contains(client.Coin));
                     if (oldRecord != null)
                     {
-                        contents = contents.Where(x => x != oldRecord).ToArray();
+                        contents = contents.Where(x => x != oldRecord && x != Environment.NewLine && !string.IsNullOrWhiteSpace(x)).ToArray();
                         File.Delete(filename);
                         File.AppendAllLines(filename, contents);
                     }
