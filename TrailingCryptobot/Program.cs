@@ -2,6 +2,7 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using TrailingCryptobot.Handlers;
@@ -23,70 +24,76 @@ namespace TrailingCryptobot
                            .CreateLogger();
             
             var clientOptions = InitializePrivateClientOptions();
+            var continuousExecutionString = ConfigurationManager.AppSettings["continuous-execution"];
+            var continuousExecution = false;
+            bool.TryParse(continuousExecutionString, out continuousExecution);
 
-            foreach (var option in clientOptions)
+            do
             {
-                try
+                foreach (var option in clientOptions)
                 {
-                    var authenticator = new Authenticator(option.Key, option.Secret, option.Passphrase);
-
-                    using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.TrailPercent))
+                    try
                     {
-                        Log.Information($"Now managing {client.Name}'s account.");
+                        var authenticator = new Authenticator(option.Key, option.Secret, option.Passphrase);
 
-                        var coinInfo = client.ProductsService.GetSingleProductAsync(client.Coin).Result;
-                        Common.ThrottleSpeedPublic();
-                        var accounts = client.AccountsService.GetAllAccountsAsync().Result;
-                        Common.ThrottleSpeedPrivate();
-
-                        var usdAccount = accounts.FirstOrDefault(x => x.Currency == "USD");
-                        var coinAccount = accounts.FirstOrDefault(x => x.Currency == coinInfo.BaseCurrency);
-
-                        if(coinAccount.Balance >= coinInfo.BaseMinSize)
+                        using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.TrailPercent))
                         {
-                            var handler = new SellHandler(client, coinInfo, coinAccount);
-                            
-                            if(coinAccount.Available >= coinInfo.BaseMinSize)
+                            Log.Information($"Now managing {client.Name}'s account.");
+
+                            var coinInfo = client.ProductsService.GetSingleProductAsync(client.Coin).Result;
+                            Common.ThrottleSpeedPublic();
+                            var accounts = client.AccountsService.GetAllAccountsAsync().Result;
+                            Common.ThrottleSpeedPrivate();
+
+                            var usdAccount = accounts.FirstOrDefault(x => x.Currency == "USD");
+                            var coinAccount = accounts.FirstOrDefault(x => x.Currency == coinInfo.BaseCurrency);
+
+                            if (coinAccount.Balance >= coinInfo.BaseMinSize)
                             {
-                                // Coin has a balance without a sell order hold.
-                                handler.HandleStopLoss().Wait();
+                                var handler = new SellHandler(client, coinInfo, coinAccount);
+
+                                if (coinAccount.Available >= coinInfo.BaseMinSize)
+                                {
+                                    // Coin has a balance without a sell order hold.
+                                    handler.HandleStopLoss().Wait();
+                                }
+                                else
+                                {
+                                    // Coin currently has an active sell order - see if it can be improved.
+                                    handler.HandleTrailStop().Wait();
+                                }
                             }
                             else
                             {
-                                // Coin currently has an active sell order - see if it can be improved.
-                                handler.HandleTrailStop().Wait();
+                                // Trail stop buy.
+                                if (usdAccount.Available >= coinInfo.MinMarketFunds)
+                                {
+                                    var handler = new BuyHandler(client, coinInfo, usdAccount);
+
+                                    handler.HandleTrailStop().Wait();
+                                }
+                                else
+                                {
+                                    Log.Information("No available funds for purchase.");
+                                }
                             }
+
+                            var reportHandler = new ReportHandler(client, coinAccount);
+                            reportHandler.HandleReporting().Wait();
+
+                            Log.Information($"Done managing {client.Name}'s account.");
                         }
-                        else
-                        {
-                            // Trail stop buy.
-                            if(usdAccount.Available >= coinInfo.MinMarketFunds)
-                            {
-                                var handler = new BuyHandler(client, coinInfo, usdAccount);
-
-                                handler.HandleTrailStop().Wait();
-                            }
-                            else
-                            {
-                                Log.Information("No available funds for purchase.");
-                            }
-                        }
-
-                        var reportHandler = new ReportHandler(client, coinAccount);
-                        reportHandler.HandleReporting().Wait();
-
-                        Log.Information($"Done managing {client.Name}'s account.");
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, ex.Message);
-                    if (ex.InnerException != null)
+                    catch (Exception ex)
                     {
-                        Log.Error(ex.InnerException, ex.InnerException.Message);
+                        Log.Error(ex, ex.Message);
+                        if (ex.InnerException != null)
+                        {
+                            Log.Error(ex.InnerException, ex.InnerException.Message);
+                        }
                     }
                 }
-            }
+            } while (continuousExecution);
         }
 
         private static List<ClientOptions> InitializePrivateClientOptions()
