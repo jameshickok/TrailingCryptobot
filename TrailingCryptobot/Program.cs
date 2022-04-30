@@ -26,6 +26,8 @@ namespace TrailingCryptobot
             var clientOptions = InitializePrivateClientOptions();
             var continuousExecutionString = ConfigurationManager.AppSettings["continuous-execution"];
             bool.TryParse(continuousExecutionString, out bool continuousExecution);
+            var stopLossEnabledString = ConfigurationManager.AppSettings["stop-loss-enabled"];
+            bool.TryParse(stopLossEnabledString, out bool stopLossEnabled);
 
             do
             {
@@ -51,7 +53,7 @@ namespace TrailingCryptobot
                             {
                                 var handler = new SellHandler(client, coinInfo, coinAccount);
 
-                                if (coinAccount.Available >= coinInfo.BaseMinSize)
+                                if (coinAccount.Available >= coinInfo.BaseMinSize && stopLossEnabled)
                                 {
                                     // Coin has a balance without a sell order hold.
                                     handler.HandleStopLoss().Wait();
