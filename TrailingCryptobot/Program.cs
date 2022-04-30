@@ -25,8 +25,7 @@ namespace TrailingCryptobot
             
             var clientOptions = InitializePrivateClientOptions();
             var continuousExecutionString = ConfigurationManager.AppSettings["continuous-execution"];
-            var continuousExecution = false;
-            bool.TryParse(continuousExecutionString, out continuousExecution);
+            bool.TryParse(continuousExecutionString, out bool continuousExecution);
 
             do
             {
