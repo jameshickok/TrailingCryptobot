@@ -34,7 +34,7 @@ namespace TrailingCryptobot.Handlers
             stopPrice = Common.GetTruncatedValue(stopPrice, _product.QuoteIncrement);
             limitPrice = Common.GetTruncatedValue(limitPrice, _product.QuoteIncrement);
 
-            var unitCost = GetCost();
+            var unitCost = await GetCost(limitPrice);
 
             if(limitPrice > unitCost)
             {
@@ -81,8 +81,6 @@ namespace TrailingCryptobot.Handlers
                     }
                 }
             }
-
-            
         }
 
         public async Task HandleStopLoss()
@@ -96,21 +94,25 @@ namespace TrailingCryptobot.Handlers
             await Common.PlaceOrder(_client, OrderSide.Sell, _client.Coin, _coinAccount.Available, stopLossLimit, stopLossPrice, null);
         }
 
-        private decimal GetCost()
+        private async Task<decimal> GetCost(decimal limitPrice)
         {
             // records.csv = "name,coin,price,fee"
             var contents = File.ReadAllLines("records.csv");
+            var feeRates = await _client.FeesService.GetCurrentFeesAsync();
+            Common.ThrottleSpeedPrivate();
 
-            if(contents == null)
+            var workingUnitCost = (limitPrice * feeRates.MakerFeeRate) + (limitPrice * (decimal)0.001); // slippage rate and fee rate
+
+            if (contents == null)
             {
-                return 0;
+                return workingUnitCost;
             }
 
             var record = contents.FirstOrDefault(x => x.Contains(_client.Name) && x.Contains(_client.Coin));
 
             if(record == null)
             {
-                return 0;
+                return workingUnitCost;
             }
 
             var priceString = record.Split(',').ElementAt(2);
@@ -118,11 +120,11 @@ namespace TrailingCryptobot.Handlers
 
             if(decimal.TryParse(priceString, out var price) && decimal.TryParse(feeString, out var fee))
             {
-                return price + (price * fee);
+                return price + (price * fee) + workingUnitCost;
             }
             else
             {
-                return 0;
+                return workingUnitCost;
             }
         }
 
