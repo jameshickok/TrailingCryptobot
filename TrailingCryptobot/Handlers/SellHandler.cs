@@ -85,9 +85,9 @@ namespace TrailingCryptobot.Handlers
 
         public async Task HandleStopLoss()
         {
-            var unitCost = await GetCost(0);
-            var stopLossPrice = unitCost - (unitCost * _client.TrailPercent * 2);
-            var stopLossLimit = stopLossPrice - (unitCost * _client.TrailPercent * 2);
+            var purchasePrice = GetPurchasePrice();
+            var stopLossPrice = purchasePrice - (purchasePrice * _client.TrailPercent * 3);
+            var stopLossLimit = stopLossPrice - (purchasePrice * _client.TrailPercent * 3);
             stopLossPrice = Common.GetTruncatedValue(stopLossPrice, _product.QuoteIncrement);
             stopLossLimit = Common.GetTruncatedValue(stopLossLimit, _product.QuoteIncrement);
 
@@ -125,6 +125,35 @@ namespace TrailingCryptobot.Handlers
             else
             {
                 return workingUnitCost;
+            }
+        }
+
+        private decimal GetPurchasePrice()
+        {
+            // records.csv = "name,coin,price,fee"
+            var contents = File.ReadAllLines("records.csv");
+            
+            if (contents == null)
+            {
+                return 0;
+            }
+
+            var record = contents.FirstOrDefault(x => x.Contains(_client.Name) && x.Contains(_client.Coin));
+
+            if (record == null)
+            {
+                return 0;
+            }
+
+            var priceString = record.Split(',').ElementAt(2);
+
+            if (decimal.TryParse(priceString, out var price))
+            {
+                return price;
+            }
+            else
+            {
+                return 0;
             }
         }
 
