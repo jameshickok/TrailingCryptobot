@@ -77,7 +77,7 @@ namespace TrailingCryptobot
                     }
                 }
                 
-                var newRecord = $"{client.Name},{client.Coin},{limitPrice},{feeRates.MakerFeeRate}";
+                var newRecord = $"{client.Name},{client.Coin},{limitPrice},{feeRates.TakerFeeRate}";
                 File.AppendAllLines(filename, new string[] { newRecord });
             }
             

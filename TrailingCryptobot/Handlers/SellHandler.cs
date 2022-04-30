@@ -86,8 +86,8 @@ namespace TrailingCryptobot.Handlers
         public async Task HandleStopLoss()
         {
             var unitCost = await GetCost(0);
-            var stopLossPrice = unitCost - (unitCost * _client.TrailPercent * 3);
-            var stopLossLimit = stopLossPrice - (unitCost * _client.TrailPercent * 3);
+            var stopLossPrice = unitCost - (unitCost * _client.TrailPercent * 2);
+            var stopLossLimit = stopLossPrice - (unitCost * _client.TrailPercent * 2);
             stopLossPrice = Common.GetTruncatedValue(stopLossPrice, _product.QuoteIncrement);
             stopLossLimit = Common.GetTruncatedValue(stopLossLimit, _product.QuoteIncrement);
 
@@ -101,7 +101,7 @@ namespace TrailingCryptobot.Handlers
             var feeRates = await _client.FeesService.GetCurrentFeesAsync();
             Common.ThrottleSpeedPrivate();
 
-            var workingUnitCost = (limitPrice * feeRates.MakerFeeRate) + (limitPrice * (decimal)0.001); // slippage rate and fee rate
+            var workingUnitCost = (limitPrice * feeRates.TakerFeeRate) + (limitPrice * (decimal)0.001); // slippage rate and fee rate
 
             if (contents == null)
             {
