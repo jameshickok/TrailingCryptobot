@@ -82,7 +82,7 @@ namespace TrailingCryptobot.Handlers
             else
             {
                 // First buy order
-                var investment = _usdAccount.Available * (decimal)0.94;
+                var investment = _usdAccount.Available * (decimal)0.95;
                 var size = investment / limitPrice;
                 size = Common.GetTruncatedValue(size, _product.BaseIncrement);
 

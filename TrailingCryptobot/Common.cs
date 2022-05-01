@@ -16,12 +16,12 @@ namespace TrailingCryptobot
     {
         public static void ThrottleSpeedPublic()
         {
-            Thread.Sleep(300);
+            Thread.Sleep(100);
         }
 
         public static void ThrottleSpeedPrivate()
         {
-            Thread.Sleep(200);
+            Thread.Sleep(66);
         }
 
         public static decimal GetTruncatedValue(decimal value, decimal increment)
