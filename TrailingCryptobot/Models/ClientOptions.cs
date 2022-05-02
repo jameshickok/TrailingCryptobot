@@ -17,5 +17,9 @@
         public string Coin { get; set; }
 
         public decimal TrailPercent { get; set; }
+
+        public decimal StopLossPercent { get; set; }
+
+        public bool IsStopLossEnabled { get; set; }
     }
 }

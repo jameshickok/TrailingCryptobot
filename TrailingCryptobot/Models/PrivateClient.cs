@@ -6,13 +6,15 @@ namespace TrailingCryptobot.Models
 {
     public class PrivateClient : CoinbaseProClient, IDisposable
     {
-        public PrivateClient(string name, string email, Authenticator authenticator, bool sandbox, string coin, decimal trailPercent) : base(authenticator, sandbox)
+        public PrivateClient(string name, string email, Authenticator authenticator, bool sandbox, string coin, decimal trailPercent, decimal stopLossPercent, bool isStopLossEnabled) : base(authenticator, sandbox)
         {
             this.Name = name;
             this.Email = email;
             this.Sandbox = sandbox;
             this.Coin = coin;
             this.TrailPercent = trailPercent;
+            this.StopLossPercent = stopLossPercent;
+            this.IsStopLossEnabled = IsStopLossEnabled;
         }
 
         public string Name { get; set; }
@@ -27,6 +29,10 @@ namespace TrailingCryptobot.Models
         public string Coin { get; set; }
 
         public decimal TrailPercent { get; set; }
+
+        public decimal StopLossPercent { get; set; }
+
+        public bool IsStopLossEnabled { get; set; }
 
         public void Dispose()
         {

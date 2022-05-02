@@ -26,8 +26,6 @@ namespace TrailingCryptobot
             var clientOptions = InitializePrivateClientOptions();
             var continuousExecutionString = ConfigurationManager.AppSettings["continuous-execution"];
             bool.TryParse(continuousExecutionString, out bool continuousExecution);
-            var stopLossEnabledString = ConfigurationManager.AppSettings["stop-loss-enabled"];
-            bool.TryParse(stopLossEnabledString, out bool stopLossEnabled);
 
             do
             {
@@ -37,7 +35,7 @@ namespace TrailingCryptobot
                     {
                         var authenticator = new Authenticator(option.Key, option.Secret, option.Passphrase);
 
-                        using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.TrailPercent))
+                        using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.TrailPercent, option.StopLossPercent, option.IsStopLossEnabled))
                         {
                             Log.Information($"Now managing {client.Name}'s account.");
 
@@ -53,7 +51,7 @@ namespace TrailingCryptobot
                             {
                                 var handler = new SellHandler(client, coinInfo, coinAccount);
 
-                                if (coinAccount.Available >= coinInfo.BaseMinSize && stopLossEnabled)
+                                if (coinAccount.Available >= coinInfo.BaseMinSize && client.IsStopLossEnabled)
                                 {
                                     // Coin has a balance without a sell order hold.
                                     handler.HandleStopLoss().Wait();
@@ -102,13 +100,13 @@ namespace TrailingCryptobot
             var options = new List<ClientOptions>();
             var contents = File.ReadAllLines("keys.csv");
             var headerRow = contents.FirstOrDefault();
-            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent")
+            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent,StopLossPercent,IsStopLossEnabled")
             {
                 foreach (var friend in contents.Where(x => x != headerRow))
                 {
                     var friendKeys = friend.Split(',');
 
-                    if (friendKeys.Count() == 8)
+                    if (friendKeys.Count() == 10)
                     {
                         var name = friendKeys.ElementAt(0); // ex: John Smith
                         var email = friendKeys.ElementAt(1);
@@ -118,6 +116,8 @@ namespace TrailingCryptobot
                         var sandbox = friendKeys.ElementAt(5); // ex: true
                         var coin = friendKeys.ElementAt(6); // ex: BTC-USD
                         var trailPercent = friendKeys.ElementAt(7); // ex: 0.01 for 1 percent
+                        var stopLossPercent = friendKeys.ElementAt(8);
+                        var isStopLossEnabled = friendKeys.ElementAt(9);
 
                         var option = new ClientOptions
                         {
@@ -128,7 +128,9 @@ namespace TrailingCryptobot
                             Key = key,
                             Sandbox = bool.Parse(sandbox),
                             Coin = coin,
-                            TrailPercent = decimal.Parse(trailPercent)
+                            TrailPercent = decimal.Parse(trailPercent),
+                            StopLossPercent = decimal.Parse(stopLossPercent),
+                            IsStopLossEnabled = bool.Parse(isStopLossEnabled)
                         };
 
                         options.Add(option);
