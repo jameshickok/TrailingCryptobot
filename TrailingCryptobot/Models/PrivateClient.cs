@@ -14,7 +14,7 @@ namespace TrailingCryptobot.Models
             this.Coin = coin;
             this.TrailPercent = trailPercent;
             this.StopLossPercent = stopLossPercent;
-            this.IsStopLossEnabled = IsStopLossEnabled;
+            this.IsStopLossEnabled = isStopLossEnabled;
         }
 
         public string Name { get; set; }
