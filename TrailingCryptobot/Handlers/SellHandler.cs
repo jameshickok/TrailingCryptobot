@@ -29,8 +29,8 @@ namespace TrailingCryptobot.Handlers
             var ticker = await _client.ProductsService.GetProductTickerAsync(_client.Coin);
             Common.ThrottleSpeedPublic();
 
-            var stopPrice = ticker.Price - (ticker.Price * _client.TrailPercent);
-            var limitPrice = stopPrice - (ticker.Price * _client.TrailPercent);
+            var stopPrice = ticker.Price - (ticker.Price * _client.SellTrailPercent);
+            var limitPrice = stopPrice - (ticker.Price * _client.SellTrailPercent / 10);
             stopPrice = Common.GetTruncatedValue(stopPrice, _product.QuoteIncrement);
             limitPrice = Common.GetTruncatedValue(limitPrice, _product.QuoteIncrement);
 
@@ -87,7 +87,7 @@ namespace TrailingCryptobot.Handlers
         {
             var purchasePrice = GetPurchasePrice();
             var stopLossPrice = purchasePrice - (purchasePrice * _client.StopLossPercent);
-            var stopLossLimit = stopLossPrice - (purchasePrice * _client.StopLossPercent);
+            var stopLossLimit = stopLossPrice - (purchasePrice * _client.StopLossPercent / 10);
             stopLossPrice = Common.GetTruncatedValue(stopLossPrice, _product.QuoteIncrement);
             stopLossLimit = Common.GetTruncatedValue(stopLossLimit, _product.QuoteIncrement);
 

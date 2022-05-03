@@ -16,7 +16,9 @@
 
         public string Coin { get; set; }
 
-        public decimal TrailPercent { get; set; }
+        public decimal BuyTrailPercent { get; set; }
+
+        public decimal SellTrailPercent { get; set; }
 
         public decimal StopLossPercent { get; set; }
 

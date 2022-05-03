@@ -1,1 +1,1 @@
-Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent,StopLossPercent,IsStopLossEnabled
+Name,Email,Passphrase,Secret,Key,Sandbox,Coin,BuyTrailPercent,SellTrailPercent,StopLossPercent,IsStopLossEnabled

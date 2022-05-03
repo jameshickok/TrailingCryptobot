@@ -35,7 +35,7 @@ namespace TrailingCryptobot
                     {
                         var authenticator = new Authenticator(option.Key, option.Secret, option.Passphrase);
 
-                        using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.TrailPercent, option.StopLossPercent, option.IsStopLossEnabled))
+                        using (var client = new PrivateClient(option.Name, option.Email, authenticator, option.Sandbox, option.Coin, option.BuyTrailPercent, option.SellTrailPercent, option.StopLossPercent, option.IsStopLossEnabled))
                         {
                             Log.Information($"Now managing {client.Name}'s account.");
 
@@ -100,13 +100,13 @@ namespace TrailingCryptobot
             var options = new List<ClientOptions>();
             var contents = File.ReadAllLines("keys.csv");
             var headerRow = contents.FirstOrDefault();
-            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent,StopLossPercent,IsStopLossEnabled")
+            if (headerRow == "Name,Email,Passphrase,Secret,Key,Sandbox,Coin,BuyTrailPercent,SellTrailPercent,StopLossPercent,IsStopLossEnabled")
             {
                 foreach (var friend in contents.Where(x => x != headerRow))
                 {
                     var friendKeys = friend.Split(',');
 
-                    if (friendKeys.Count() == 10)
+                    if (friendKeys.Count() == 11)
                     {
                         var name = friendKeys.ElementAt(0); // ex: John Smith
                         var email = friendKeys.ElementAt(1);
@@ -115,9 +115,10 @@ namespace TrailingCryptobot
                         var key = friendKeys.ElementAt(4);
                         var sandbox = friendKeys.ElementAt(5); // ex: true
                         var coin = friendKeys.ElementAt(6); // ex: BTC-USD
-                        var trailPercent = friendKeys.ElementAt(7); // ex: 0.01 for 1 percent
-                        var stopLossPercent = friendKeys.ElementAt(8);
-                        var isStopLossEnabled = friendKeys.ElementAt(9);
+                        var buyTrailPercent = friendKeys.ElementAt(7); // ex: 0.01 for 1 percent
+                        var sellTrailPercent = friendKeys.ElementAt(8); // ex: 0.01 for 1 percent
+                        var stopLossPercent = friendKeys.ElementAt(9);
+                        var isStopLossEnabled = friendKeys.ElementAt(10);
 
                         var option = new ClientOptions
                         {
@@ -128,7 +129,8 @@ namespace TrailingCryptobot
                             Key = key,
                             Sandbox = bool.Parse(sandbox),
                             Coin = coin,
-                            TrailPercent = decimal.Parse(trailPercent),
+                            BuyTrailPercent = decimal.Parse(buyTrailPercent),
+                            SellTrailPercent = decimal.Parse(sellTrailPercent),
                             StopLossPercent = decimal.Parse(stopLossPercent),
                             IsStopLossEnabled = bool.Parse(isStopLossEnabled)
                         };
