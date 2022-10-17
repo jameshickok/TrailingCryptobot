@@ -13,7 +13,7 @@ Secret: [Generated from your API key]<br />
 Key: [Generated from your API key]<br />
 Sandbox: true or false<br />
 Coin: BTC-USD<br />
-BuyTrailPercent: 0.02
-SellTrailPercent: 0.02
-StopLossPercent: 0.02
-IsStopLossEnabled: true
+BuyTrailPercent: 0.02<br />
+SellTrailPercent: 0.02<br />
+StopLossPercent: 0.02<br />
+IsStopLossEnabled: true<br />
