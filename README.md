@@ -3,7 +3,7 @@ This is a simple automated cryptocurrency trading bot that uses the Coinbase Pro
 
 How to create a Coinbase Pro API key: https://help.coinbase.com/en/pro/other-topics/api/how-do-i-create-an-api-key-for-coinbase-pro
 
-Populate the data in the keys.csv file. The format for each row should be: Name,Email,Passphrase,Secret,Key,Sandbox,Coin,TrailPercent.
+Populate the data in the keys.csv file. The format for each row should be: Name,Email,Passphrase,Secret,Key,Sandbox,Coin,BuyTrailPercent,SellTrailPercent,StopLossPercent,IsStopLossEnabled.
 
 # Examples
 Name: John Smith<br />
@@ -13,4 +13,7 @@ Secret: [Generated from your API key]<br />
 Key: [Generated from your API key]<br />
 Sandbox: true or false<br />
 Coin: BTC-USD<br />
-TrailPercent: 0.02
+BuyTrailPercent: 0.02
+SellTrailPercent: 0.02
+StopLossPercent: 0.02
+IsStopLossEnabled: true
